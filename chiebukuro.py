@@ -27,14 +27,27 @@ def insertQuestion(url, main, mainlink):
 	time = posttime.span.string
 	posttime.span.extract()
 	day = posttime.text
+
 	# 投稿
 	question = usrQ.find("div", class_="ptsQes")
-	qbody = question.find("p", class_="yjDirectSLinkTarget").text
+	qbody = question.find_all("p", class_="yjDirectSLinkTarget")
+
+	# 質問の前後にタブがいっぱい入るので除去
+	# 一行しかない質問なら配列の長さは1
+	# 複数行あれば配列の長さは2
+	car = re.sub('^s+$', '', re.sub(r'^\s+', '', qbody[0].text))
+	if (len(qbody) == 2):
+		cdr = re.sub(r'\s+$', '', re.sub(r'^\s+', '', qbody[1].text))
+
+	# 補足
+	qsup = question.find("p", class_="queTxtsup")
+	if (qsup != None):
+		sup = qsup.text
+	else:
+		sup = ''
 	
+	# 現在時刻
 	now = datetime.datetime.now()
-	
-	# 質問の一行目の前にタブがいっぱい入るので除去
-	body = re.sub(r'^\s+', '', qbody)
 	
 	client = MongoClient('mongodb://localhost:27017')
 	db = client.local
@@ -53,7 +66,8 @@ def insertQuestion(url, main, mainlink):
 		'postdate': day + ' ' + time,
 		'main': main,
 		'mainlink': mainlink, 
-		'body': body
+		'body': car + cdr,
+		'sup': sup
 	}
 	
 	db.qa.insert_one(data)

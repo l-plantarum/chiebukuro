@@ -11,7 +11,15 @@ import json
 
 
 
+# 指定したURLのページを情報を取得しMongoDBに追加する
 def insertQuestion(url, main, mainlink):
+	# 登録済URLなら以下の処理は実施しない
+	client = MongoClient('mongodb://localhost:27017')
+	db = client.local
+	res = db.qa.find({"url":url})
+	if res.count() != 0:
+		return	
+	
 	# 検索クエリを発行
 	resp = urllib.request.urlopen(url)
 	src = resp.read()
@@ -49,14 +57,9 @@ def insertQuestion(url, main, mainlink):
 	# 現在時刻
 	now = datetime.datetime.now()
 	
+	# MongoDBに接続
 	client = MongoClient('mongodb://localhost:27017')
 	db = client.local
-	
-	# 既に登録済みか?
-	
-	res = db.qa.find({"url":url})
-	if res.count() != 0:
-		return	
 	
 	# mongoへの書き込み
 	data = {
@@ -76,14 +79,15 @@ def insertQuestion(url, main, mainlink):
 # 知恵袋・大学入試カテゴリのトップページ
 url = 'https://chiebukuro.yahoo.co.jp/dir/list.php?did=2079405665&flg=3&type=list&sort=2' 
 
+# トップページの情報を取得
 resp = urllib.request.urlopen(url)
-src = resp.read()
-soup = BeautifulSoup(src, 'lxml')
-
-qalst = soup.find("ul", id="qalst")
-qas = qalst.find_all("dl")
 
 while True:
+	src = resp.read()
+	soup = BeautifulSoup(src, 'lxml')
+
+	qalst = soup.find("ul", id="qalst")
+	qas = qalst.find_all("dl")
 	for qa in qas:
 		dt = qa.find("dt")
 		dd = qa.find("dd", class_="maincat")
@@ -98,9 +102,10 @@ while True:
 		time.sleep(1)
 		
 	anchor = soup.find("strong", id="yschnxtb")
-	break
 	if anchor == None:
 		break
 	url = anchor.a.get("href")
+	time.sleep(10)
+	print('anchor:'+anchor.a.get("href"))
 	resp = urllib.request.urlopen(anchor.a.get("href"))
 

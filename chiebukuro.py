@@ -54,6 +54,13 @@ def insertQuestion(url, main, mainlink):
 	else:
 		sup = ''
 	
+	# お礼
+	thxpt = question.find("cc", class_="cin")
+	if (thxpt != None):
+		point = thxpt.text.replace('枚', '')
+	else:
+		point = 0
+
 	# 現在時刻
 	now = datetime.datetime.now()
 	
@@ -70,6 +77,7 @@ def insertQuestion(url, main, mainlink):
 		'main': main,
 		'mainlink': mainlink, 
 		'body': car + cdr,
+		'point': point,
 		'sup': sup
 	}
 	

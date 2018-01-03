@@ -52,8 +52,6 @@ for u in univs:
 		# s/短期大学/短大/
 		print(re.sub(r'短期大学', '短大', name))
 
-sys.exit(0)
-
 # 私立大学
 resp = urllib.request.urlopen(private_url)
 src = resp.read()
@@ -64,3 +62,6 @@ for u in univs:
 	uname = u.find("a")
 	if uname != None and uname.text != "":
 		print(uname.text)
+
+# 放送大学. 国立のような私立大という特殊な立ち位置
+print("放送大学")

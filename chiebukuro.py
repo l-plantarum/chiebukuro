@@ -8,6 +8,7 @@ from pymongo import MongoClient
 import re
 import datetime
 import json
+import syslog
 
 
 
@@ -84,11 +85,31 @@ def insertQuestion(url, main, mainlink):
 	db.qa.insert_one(data)
 	client.close()
 
+
+# syslogに質問件数を書き込む
+def outputCount(msg):
+	client = MongoClient('mongodb://localhost:27017')
+	db = client.local
+	count = db.qa.count()
+	syslog.openlog("chiebukuro")
+	syslog.syslog(msg + ":" + str(count))
+	client.close()
+
 # 知恵袋・大学入試カテゴリのトップページ
 url = 'https://chiebukuro.yahoo.co.jp/dir/list.php?did=2079405665&flg=3&type=list&sort=2' 
 
 # トップページの情報を取得
 resp = urllib.request.urlopen(url)
+
+# バッチモード
+if len(sys.argv) == 2 and sys.argv[1] == "--batch":
+	batchMode = True
+else:
+	batchMode = False
+
+
+if batchMode == True:
+	outputCount("begin")
 
 while True:
 	src = resp.read()
@@ -100,8 +121,9 @@ while True:
 		dt = qa.find("dt")
 		dd = qa.find("dd", class_="maincat")
 		it = dt.find("a");
-		print('text:'+it.text)
-		print('href:'+it.get('href'))
+		if batchMode == False:
+			print('text:'+it.text)
+			print('href:'+it.get('href'))
 		if dd != None:
 			mainq = dd.find("a")
 			insertQuestion(it.get('href'), mainq.text, mainq.get('href'))
@@ -114,6 +136,11 @@ while True:
 		break
 	url = anchor.a.get("href")
 	time.sleep(10)
-	print('anchor:'+anchor.a.get("href"))
+	if batchMode == False:
+		print('anchor:'+anchor.a.get("href"))
+	else:
+		syslog.syslog(anchor.a.get("href"))
 	resp = urllib.request.urlopen(anchor.a.get("href"))
 
+if batchMode == True:
+	outputCount("begin")

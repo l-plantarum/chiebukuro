@@ -18,4 +18,14 @@ wikipediaにある学科リストを取得する．
 
 # 文書解析用
 
+# 統計情報(util配下)
+
+* count.sh
+データ件数
+* daycount.py
+日々の投稿件数
+* head.sh
+古いデータ三件
+* tail.sh
+最新のデータ三件
 

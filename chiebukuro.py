@@ -11,6 +11,17 @@ import json
 import syslog
 
 
+# 指定した記事を開き，取り消し済みならNoneを返す
+def urlopen(url):
+	try:
+		resp = urllib.request.urlopen(url)
+	except urllib.HTTPError as e:
+		if e.code == 404: # これは取り消し済
+			return None
+		else: # どの道中身は返せない
+			return None
+	else:
+		return resp
 
 # 指定したURLのページを情報を取得しMongoDBに追加する
 def insertQuestion(url, main, mainlink):
@@ -20,9 +31,15 @@ def insertQuestion(url, main, mainlink):
 	res = db.qa.find({"url":url})
 	if res.count() != 0:
 		return	
+	# 取り消し済みなら何もしない
+	if res.has_key('cancel') == True:
+		return
 	
 	# 検索クエリを発行
-	resp = urllib.request.urlopen(url)
+	resp = urlopen(url)
+	# 最初から取り消ししてあれば何もしない
+	if resp == None: 
+		return
 	src = resp.read()
 	soup = BeautifulSoup(src, 'lxml')
 	

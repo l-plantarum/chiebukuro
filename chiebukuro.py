@@ -32,7 +32,7 @@ def insertQuestion(url, main, mainlink):
 	if res.count() != 0:
 		return	
 	# 取り消し済みなら何もしない
-	if res.has_key('cancel') == True:
+	if "cancel" not in res == True:
 		return
 	
 	# 検索クエリを発行

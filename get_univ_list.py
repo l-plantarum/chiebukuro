@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 # 文科省のサイトから大学名のリストを取得する
 
 import urllib.request

@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 # wikipediaの学科リスト
 
 import urllib.request

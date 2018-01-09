@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 # キャンセルされた質問にマークをつける
 
 import urllib.request

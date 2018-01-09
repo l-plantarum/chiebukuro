@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 # coding=utf-8
 
 from pymongo import MongoClient
@@ -20,7 +21,7 @@ while (workday >= beginDate):
 	beginTime = theday + " 00:00:00"
 	endTime   = theday + " 23:59:59"
 	count = db.qa.find({"postdate" : { "$gte": beginTime, "$lte": endTime}}).count()
-	print(theday + ":" + str(count))
+	print(theday + "," + str(count))
 	# 前の日
 	workday = workday - oneday
 client.close()

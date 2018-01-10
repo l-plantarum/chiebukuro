@@ -10,6 +10,8 @@ client = MongoClient("mongodb://localhost:27017")
 db = client.local
 allqa = db.qa.find()
 
+canceled = []
+
 for q in allqa:
 	# キャンセル済みの質問は調べない
 	if "cancel" not in q == True and q["cancel"] == True:
@@ -20,7 +22,9 @@ for q in allqa:
 	try:
 		resp = urllib.request.urlopen(url)
 	except urllib.error.HTTPError as e:
-		# キャンセル済みならマークをつける
+		# キャンセル済みならリストに追加する
 		if e.code == 404:
-			db.qa.update({'url': url}, {'$set':{'cancel': True}})
-			print(q)
+			canceled.append(url)
+
+for c in canceled:
+	db.qa.update({'url': c}, {'$set':{'cancel': True}})

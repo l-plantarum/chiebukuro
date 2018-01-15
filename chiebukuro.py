@@ -16,7 +16,7 @@ import syslog
 def urlopen(url):
 	try:
 		resp = urllib.request.urlopen(url)
-	except urllib.HTTPError as e:
+	except urllib.error.HTTPError as e:
 		if e.code == 404: # これは取り消し済
 			return None
 		else: # どの道中身は返せない

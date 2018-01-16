@@ -54,6 +54,12 @@ def insertQuestion(url, main, mainlink):
 	time = posttime.span.string
 	posttime.span.extract()
 	day = posttime.text
+	arr = day.split('/')
+	if (len(arr[1]) == 1):
+		arr[1] = '0' + arr[1]
+	if (len(arr[2]) == 1):
+		arr[2] = '0' + arr[2]
+	day = '/'.join(arr)
 
 	# 投稿
 	question = usrQ.find("div", class_="ptsQes")

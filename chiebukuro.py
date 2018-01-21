@@ -25,22 +25,24 @@ def urlopen(url):
 		return resp
 
 # 指定したURLのページを情報を取得しMongoDBに追加する
+# True: DBの内容を変更した
+# False: DBの内容はそのまま
 def insertQuestion(url, main, mainlink):
 	# 登録済URLなら以下の処理は実施しない
 	client = MongoClient('mongodb://localhost:27017')
 	db = client.local
 	res = db.qa.find({"url":url})
 	if res.count() != 0:
-		return	
+		return False	
 	# 取り消し済みなら何もしない
 	if "cancel" not in res == True:
-		return
+		return True
 	
 	# 検索クエリを発行
 	resp = urlopen(url)
 	# 最初から取り消ししてあれば何もしない
 	if resp == None: 
-		return
+		return True
 	src = resp.read()
 	soup = BeautifulSoup(src, 'lxml')
 	
@@ -108,6 +110,7 @@ def insertQuestion(url, main, mainlink):
 	
 	db.qa.insert_one(data)
 	client.close()
+	return True
 
 
 # syslogに質問件数を書き込む
@@ -125,41 +128,59 @@ url = 'https://chiebukuro.yahoo.co.jp/dir/list.php?did=2079405665&flg=3&type=lis
 # トップページの情報を取得
 resp = urllib.request.urlopen(url)
 
-# バッチモード
-if len(sys.argv) == 2 and sys.argv[1] == "--batch":
-	batchMode = True
-else:
-	batchMode = False
-
+# オプション
+batchMode = False
+allMode = False
+for i in range(1, len(sys.argv)):
+	# バッチモード
+	if sys.argv[i] == "--batch":
+		batchMode = True
+	if sys.argv[i] == "--all":
+		allMode = True
 
 if batchMode == True:
 	outputCount("begin")
 
+breakFlag = False
+# 最後までクロールしたらbreakする
 while True:
 	src = resp.read()
 	soup = BeautifulSoup(src, 'lxml')
 
 	qalst = soup.find("ul", id="qalst")
 	qas = qalst.find_all("dl")
+
+	# 一画面分
 	for qa in qas:
 		dt = qa.find("dt")
 		dd = qa.find("dd", class_="maincat")
 		it = dt.find("a");
+		# クロール中の記事のタイトルとURLの表示
 		if batchMode == False:
 			print('text:'+it.text)
 			print('href:'+it.get('href'))
 		if dd != None:
+			# 複数カテゴリへの投稿
 			mainq = dd.find("a")
-			insertQuestion(it.get('href'), mainq.text, mainq.get('href'))
+			dbFlag = insertQuestion(it.get('href'), mainq.text, mainq.get('href'))
 		else:
-			insertQuestion(it.get('href'), '', '')
+			# 当該カテゴリのみへの投稿
+			dbFlag = insertQuestion(it.get('href'), '', '')
 		time.sleep(1)
+		if allMode == False and dbFlag == False:
+			breakFlag = True
+			break
 		
+	if breakFlag == True:
+		break
+	# 次へのリンクを探す
 	anchor = soup.find("strong", id="yschnxtb")
+	# なければ終了(最後までクロールした)
 	if anchor == None:
 		break
 	url = anchor.a.get("href")
 	time.sleep(10)
+	# 次のクロールする質問リスト
 	if batchMode == False:
 		print('anchor:'+anchor.a.get("href"))
 	else:

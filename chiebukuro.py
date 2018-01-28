@@ -36,13 +36,13 @@ def insertQuestion(url, main, mainlink):
 		return False	
 	# 取り消し済みなら何もしない
 	if "cancel" not in res == True:
-		return True
+		return False
 	
 	# 検索クエリを発行
 	resp = urlopen(url)
 	# 最初から取り消ししてあれば何もしない
 	if resp == None: 
-		return True
+		return False
 	src = resp.read()
 	soup = BeautifulSoup(src, 'lxml')
 	
@@ -142,6 +142,7 @@ if batchMode == True:
 	outputCount("begin")
 
 breakFlag = False
+series = 0
 # 最後までクロールしたらbreakする
 while True:
 	src = resp.read()
@@ -166,8 +167,12 @@ while True:
 		else:
 			# 当該カテゴリのみへの投稿
 			dbFlag = insertQuestion(it.get('href'), '', '')
-		time.sleep(1)
-		if allMode == False and dbFlag == False:
+		if dbFlag == False:
+			series = series + 1
+		else:
+			series = 0
+			time.sleep(1)
+		if allMode == False and series == 10:
 			breakFlag = True
 			break
 		

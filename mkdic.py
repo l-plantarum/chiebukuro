@@ -8,8 +8,10 @@ if len(sys.argv) == 1:
 	sys.exit(1)
 if len(sys.argv) == 3 and sys.argv[2] == 'univ':
 	dictype = '固有名詞'
+	nauntype = '組織'
 else:
 	dictype = '名詞'
+	nauntype = '一般'
 
 tagger = MeCab.Tagger('-Oyomi')
 out = sys.argv[1] + ".dic"
@@ -20,7 +22,7 @@ line = fi.readline()
 while line:
 	naun = line.replace('\n', '')
 	yomi = tagger.parse(naun).replace('\n', '')
-	fo.write('{naun},*,*,*,名詞,{dictype},組織,*,*,*,{naun},{yomi},{yomi}\n'.format(naun=naun, dictype=dictype,yomi=yomi))
+	fo.write('{naun},*,*,*,名詞,{dictype},{nauntype},*,{naun},{yomi},{yomi}\n'.format(naun=naun, dictype=dictype, nauntype=nauntype, yomi=yomi))
 	line = fi.readline()
 		
 fi.close();

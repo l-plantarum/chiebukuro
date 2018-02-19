@@ -9,8 +9,12 @@ client = MongoClient('mongodb://localhost:27017')
 db = client.local
 
 # 2017/12/30からデータ収集を開始した
-beginDate = datetime.date(2017, 12, 30)
 today = datetime.date.today()
+if len(sys.argv) == 2:
+	beginDate = today + datetime.timedelta(days = int('-' + sys.argv[1]))
+else:
+	beginDate = datetime.date(2017, 12, 30)
+
 oneday = datetime.timedelta(days = 1)
 workday = today + datetime.timedelta(hours=9) + oneday
 

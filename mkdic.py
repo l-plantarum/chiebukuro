@@ -14,7 +14,7 @@ else:
 	nauntype = '一般'
 
 tagger = MeCab.Tagger('-Oyomi')
-out = sys.argv[1] + ".dic"
+out = sys.argv[1].replace(".txt", ".csv")
 
 fo = open(out, 'w')
 fi = open(sys.argv[1], 'r')
@@ -22,7 +22,7 @@ line = fi.readline()
 while line:
 	naun = line.replace('\n', '')
 	yomi = tagger.parse(naun).replace('\n', '')
-	fo.write('{naun},*,*,*,名詞,{dictype},{nauntype},*,{naun},{yomi},{yomi}\n'.format(naun=naun, dictype=dictype, nauntype=nauntype, yomi=yomi))
+	fo.write('{naun},*,*,2000,名詞,{dictype},{nauntype},*,*,*,{naun},{yomi},{yomi}\n'.format(naun=naun, dictype=dictype, nauntype=nauntype, yomi=yomi))
 	line = fi.readline()
 		
 fi.close();

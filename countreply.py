@@ -1,4 +1,3 @@
-
 import time
 import urllib.request
 from bs4 import BeautifulSoup
@@ -8,13 +7,16 @@ import re
 import datetime
 import json
 import syslog
+import pdb
+
+pdb.set_trace()
 
 
 def urlopen(url):
     try:
         resp = urllib.request.urlopen(url)
     except urllib.error.HTTPError as e:
-        if e.code == 404: # これは取り消し済
+        if e.code == 404: # canceled
             return None
         else: # どの道中身は返せない
             return None
@@ -29,7 +31,7 @@ for qa in db.qa.find({"$and":[{"cancel": {"$exists": False}}, {"ansnum": {"$exis
     resp = urlopen(qa['url'])
     # キャンセル済
     if (resp == None):
-        print("hoge")
+        print("Canceled")
         qa['cancel'] = True
     else:
             # 回答数をカウント
@@ -37,5 +39,6 @@ for qa in db.qa.find({"$and":[{"cancel": {"$exists": False}}, {"ansnum": {"$exis
         soup = BeautifulSoup(src, 'lxml')
         inf = soup.find("dd", itemprop="answerCount")
         qa['ansnum'] = inf.text
-    db.qa.update_one({'url': qa['url']}, {'$set': qa}, upsert=True)
+        print(qa['ansnum'])
     print(qa['url'])
+    db.qa.update_one({'_id': qa['_id']}, {'$set': qa}, upsert=True)

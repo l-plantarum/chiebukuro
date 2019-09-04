@@ -7,9 +7,9 @@ import re
 import datetime
 import json
 import syslog
-import pdb
+# import pdb
 
-pdb.set_trace()
+# pdb.set_trace()
 
 
 def urlopen(url):

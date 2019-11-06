@@ -97,7 +97,7 @@ def insertQuestion(url, main, mainlink):
 	
 	# mongoへの書き込み
 	data = {
-		'author': author.text,
+#		'author': author.text,
 		'url' : url,
 		'getdate': now.strftime("%Y/%m/%d %H:%M:%S"),
 		'postdate': day + ' ' + time,

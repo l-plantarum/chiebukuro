@@ -7,8 +7,8 @@ import re
 import datetime
 import json
 import syslog
-# import pdb
 
+# import pdb
 # pdb.set_trace()
 
 
@@ -27,7 +27,7 @@ def urlopen(url):
 client = MongoClient('mongodb://localhost:27017')
 db = client.local
 
-for qa in db.qa.find({"$and":[{"cancel": {"$exists": False}}, {"ansnum": {"$exists": False}}, {"postdate": {"$lt": '2019/08/01'}} ]}):
+for qa in db.qa.find({"$and":[{"cancel": {"$exists": False}}, {"ansnum": {"$exists": False}}, {"postdate": {"$lte": '2020/01/31'}} ]}):
     resp = urlopen(qa['url'])
     # キャンセル済
     if (resp == None):

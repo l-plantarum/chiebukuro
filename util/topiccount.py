@@ -24,8 +24,8 @@ for i in (2018, 2019, 2020):
     beginTime = bdaystr + " 00:00:00"
     endTime   = edaystr + " 00:00:00"
     print("{},".format(bdaystr), end="")
-    for k in range(20): 
-      count = db.test20200113.find({"postdate" : { "$gte": beginTime, "$lt": endTime}, "maxtopic20": k}).count()
+    for k in range(150): 
+      count = db.test20200113.find({"postdate" : { "$gte": beginTime, "$lt": endTime}, "maxtopic150": k}).count()
       print("{},".format(count), end="")
     print("") # newline
 client.close()

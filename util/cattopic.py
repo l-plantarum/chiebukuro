@@ -14,7 +14,7 @@ db = client.local
 
 topic = int(sys.argv[2])
 prob = sys.argv[3]
-posts = db[testdb].find({"maxtopic150":"34","maxprob150":{"$gte":"0.5"}})
+posts = db[testdb].find({"maxtopic150":"34","maxprob150":{"$gte":"0.5"}}).sort([{"postdate", "1"}])
 
 if sys.argv[1] == "150":
 	posts = db[testdb].find({"maxtopic150": topic, "maxprob150": {"$gte": prob}}, {"_id"})

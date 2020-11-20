@@ -22,11 +22,8 @@ line = fi.readline()
 while line:
 	naun = line.replace('\n', '')
 	yomi = tagger.parse(naun).replace('\n', '')
-	fo.write('{naun},*,*,1000,名詞,{dictype},{nauntype},*,*,*,*,{naun},{yomi},{yomi}\n'.format(naun=naun, dictype=dictype, nauntype=nauntype, yomi=yomi))
+	fo.write('{naun},*,*,1000,名詞,{dictype},{nauntype},*,*,*,{naun},{yomi},{yomi}\n'.format(naun=naun, dictype=dictype, nauntype=nauntype, yomi=yomi))
 	line = fi.readline()
 		
 fi.close();
 fo.close()
-
-
-

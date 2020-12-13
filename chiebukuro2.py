@@ -49,13 +49,16 @@ def insertQuestion(url, main, mainlink):
 	# 質問
 	usrQ = soup.find("div", class_="usrQstn")
 	# 質問者情報
-	usrInfo = usrQ.find("div", class_="usrInfo")
-	author = usrInfo.find("p", class_="usrNm")
-	posttime = usrInfo.find("p", class_="upDt")
+	# usrInfo = usrQ.find("div", class_="usrInfo")
+	# author = usrInfo.find("p", class_="usrNm")
+	author = soup.find("div", class_="ClapLv1UserInfo_Chie-UserInfo__UserName__1bJYU")
+	# posttime = usrInfo.find("p", class_="upDt")
+	posttime = soup.find("p", class_="ClapLv1UserInfo_Chie-UserInfo__Date__2F1LF")
 	# <p>日付<span>時間</span></p>から時間を取得後，時間を除去
-	time = posttime.span.string
-	posttime.span.extract()
-	day = posttime.text
+	# time = posttime.span.string
+	daytime = posttime.text.split(' ')
+	time = daytime[1]
+	day = daytime[0]
 	arr = day.split('/')
 	if (len(arr[1]) == 1):
 		arr[1] = '0' + arr[1]
@@ -64,15 +67,16 @@ def insertQuestion(url, main, mainlink):
 	day = '/'.join(arr)
 
 	# 投稿
-	question = usrQ.find("div", class_="ptsQes")
-	qbody = question.find_all("p", class_="yjDirectSLinkTarget")
+	# question = usrQ.find("div", class_="ptsQes")
+	question = soup.find("p", class_="yjDirectSLinkTarget ClapLv1TextBlock_Chie-TextBlock__Text__1jsQC ClapLv1TextBlock_Chie-TextBlock__Text--medium__3nLu4 ClapLv1TextBlock_Chie-TextBlock__Text--SpaceOut__3kF8R ClapLv1TextBlock_Chie-TextBlock__Text--preLine__2SRma")
 
 	# 質問の前後にタブがいっぱい入るので除去
 	# 一行しかない質問なら配列の長さは1
 	# 複数行あれば配列の長さは2
-	car = re.sub('^s+$', '', re.sub(r'^\s+', '', qbody[0].text))
-	if (len(qbody) == 2):
-		cdr = re.sub(r'\s+$', '', re.sub(r'^\s+', '', qbody[1].text))
+	#car = re.sub('^s+$', '', re.sub(r'^\s+', '', qbody[0].text))
+	car = re.sub('^s+$', '', re.sub(r'^\s+', '', question.text))
+	#if (len(qbody) == 2):
+	#	cdr = re.sub(r'\s+$', '', re.sub(r'^\s+', '', qbody[1].text))
 
 	# 補足
 	qsup = question.find("p", class_="queTxtsup")
@@ -82,9 +86,9 @@ def insertQuestion(url, main, mainlink):
 		sup = ''
 	
 	# お礼
-	thxpt = question.find("cc", class_="cin")
+	thxpt = question.find("cc", class_="ClapLv2QuestionItem_Chie-QuestionItem__SubChieCoin__2akxj")
 	if (thxpt != None):
-		point = thxpt.text.replace('枚', '')
+		point = thxpt.text
 	else:
 		point = 0
 
@@ -103,7 +107,7 @@ def insertQuestion(url, main, mainlink):
 		'postdate': day + ' ' + time,
 		'main': main,
 		'mainlink': mainlink, 
-		'body': car + cdr,
+		'body': car,
 		'point': point,
 		'sup': sup
 	}
